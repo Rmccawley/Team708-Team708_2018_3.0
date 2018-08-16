@@ -9,5 +9,8 @@
 	<classpathentry kind="var" path="wpiutil" sourcepath="wpiutil.sources"/>
 	<classpathentry kind="var" path="USERLIBS_DIR/CTRE_Phoenix-sources.jar"/>
 	<classpathentry kind="var" path="USERLIBS_DIR/CTRE_Phoenix.jar"/>
+	<classpathentry kind="lib" path="src/loops/ILooper.java"/>
+	<classpathentry kind="lib" path="src/loops/Loop.java"/>
+	<classpathentry kind="lib" path="src/loops/Looper.java"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
