@@ -1,4 +1,4 @@
-package com.team254.frc2018.loops;
+package loops;
 
 /**
  * Interface for loops, which are routine that run periodically in the robot code (such as periodic gyroscope

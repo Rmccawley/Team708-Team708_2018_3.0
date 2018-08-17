@@ -9,6 +9,7 @@ package org.usfirst.frc.team708.robot;
  * @author omn0mn0m
  */
 public final class Constants {
+    public static final double kLooperDt = 0.01;
 
 	/*
 	 * Motor Controllers
@@ -108,10 +109,73 @@ public final class Constants {
 	
 	public static final double pid_tolerance = 1;
 	
-	
+    // PID gains for elevator velocity loop (HIGH GEAR)
+    // Units: setpoint, error, and output are in native units per 100ms.
+    // Elevator encoder is CTRE mag encoder which is 4096 native units per revolution.
+    public static final double kElevatorHighGearKp = 0.15;
+    public static final double kElevatorHighGearKi = 0.0;//0.0;
+    public static final double kElevatorHighGearKd = 4.0;
+    public static final double kElevatorHighGearKf = 0.06; // lower speed:  0.08;
+    public static final double kElevatorJogKp = 0.1;
+    public static final double kElevatorJogKd = 3.0;
+    public static final double kElevatorFeedforwardNoCube = -0.06;//33000;
+    public static final double kElevatorFeedforwardWithCube = -0.07;//33000;
+
+    public static final int kElevatorHighGearMaxIntegralAccumulator = 500000; //todo: tune me
+    public static final int kElevatorHighGearIZone = 0;
+    public static final int kElevatorHighGearDeadband = 0;
+    public static final int kElevatorHighGearCruiseVelocity = 12500;
+    public static final int kElevatorHighGearAcceleration = 27000;//33000;
+    public static final double kElevatorEpsilon = 1.0;//33000;
+    public static final double kElevatorRampRate = 0.1;
+
+    public static final double kWristKp = 3.0;
+    public static final double kWristKi = 0.0;
+    public static final double kWristKd = 50.0;
+    public static final double kWristKf = 1.05;
+    public static final double kWristJogKp = 2.0;
+    public static final double kWristJogKd = 40.0;
+    public static final double kWristKaWithCube = 0.006;
+    public static final double kWristKaWithoutCube = 0.003;
+    public static final double kWristKfMultiplierWithCube = 0.15;
+    public static final double kWristKfMultiplierWithoutCube = 0.1;
+    public static final double kWristElevatorAccelerationMultiplier = -1.0;
+    public static final double kWristEpsilon = 2.0;
+
+    public static final int kWristMaxIntegralAccumulator = 500000; //todo: tune me
+    public static final int kWristIZone = 500; //todo: tune me
+    public static final int kWristDeadband = 5; //todo: tune me
+    public static final int kWristCruiseVelocity = 2500; //todo: tune me
+    public static final int kWristAcceleration = 2500; //2000 //todo: tune me
+    public static final double kWristRampRate = 0.001;
+    public static final double kAutoWristRampRate = 0.01;
+
+    // Intake
+    public static final int kIntakeLeftMasterId = 9;
+    public static final int kIntakeRightMasterId = 10;
+    public static final int kCanifierId = 0;
+
+    // Elevator
+    public static final int kElevatorMasterId = 11;
+    public static final int kElevatorRightSlaveId = 8;
+    public static final int kElevatorLeftSlaveAId = 1;
+    public static final int kElevatorLeftSlaveBId = 2;
+    
+    public static final int kElevatorShifterSolenoidId = 8;
+
+    // Wrist
+    public static final int KWristMasterId = 15;
+    
 	/*
 	 * Vision Processor
 	 */
 	// public static final double ;
-	
+    
+    /* I/O */
+    // (Note that if multiple talons are dedicated to a mechanism, any sensors
+    // are attached to the master)
+
+    public static final int kCANTimeoutMs = 10; //use for on the fly updates
+    public static final int kLongCANTimeoutMs = 100; //use for constructors
+
 }

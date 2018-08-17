@@ -20,19 +20,24 @@ import org.usfirst.frc.team708.robot.commands.intakeCube.*;
 import org.usfirst.frc.team708.robot.commands.drivetrain.*;
 
 import org.usfirst.frc.team708.robot.commands.autonomous.*;
+import org.usfirst.frc.team708.robot.subsystems.Subsystem;
 import org.usfirst.frc.team708.robot.subsystems.Drivetrain;
 import org.usfirst.frc.team708.robot.subsystems.Arm;
 import org.usfirst.frc.team708.robot.subsystems.Telescope;
+import org.usfirst.frc.team708.robot.subsystems.Wrist;
+import org.usfirst.frc.team708.robot.subsystems.Elevator;
 import org.usfirst.frc.team708.robot.subsystems.IntakeCube;
 import org.usfirst.frc.team708.robot.subsystems.VisionProcessor;
 import org.usfirst.frc.team708.robot.subsystems.PneumaticsCube;
 import org.usfirst.frc.team708.robot.subsystems.PneumaticsClimber;
 import org.usfirst.frc.team708.robot.commands.pneumatics.*;
 import org.usfirst.frc.team708.robot.Constants;
+import org.usfirst.frc.team708.robot.SubsystemManager;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import loops.Looper;
 
-
+import java.util.Arrays;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -44,7 +49,16 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
  * @cleanup of vision & gamedata - 1/28 @11:24
  */
 public class Robot extends IterativeRobot {
-	
+    private Looper mEnabledLooper = new Looper();
+    private Looper mDisabledLooper = new Looper();
+    
+    private final SubsystemManager mSubsystemManager = new SubsystemManager(
+            Arrays.asList(
+                    Wrist.getInstance(),
+                    Elevator.getInstance()
+            )
+    );
+
 	Timer statsTimer;										// Timer used for Smart Dash statistics
     
     public static Drivetrain 		drivetrain;
@@ -71,7 +85,9 @@ public class Robot extends IterativeRobot {
      * used for any initialization code.
      */
     public void robotInit() {
-    	
+        mSubsystemManager.registerEnabledLoops(mEnabledLooper);
+        mSubsystemManager.registerDisabledLoops(mDisabledLooper);
+        
         statsTimer = new Timer();	// Initializes the timer for sending Smart Dashboard data
         statsTimer.start();		// Starts the timer for the Smart Dashboard
         
@@ -112,6 +128,9 @@ public class Robot extends IterativeRobot {
 	 * Runs at the start of autonomous mode
 	 */
     public void autonomousInit() {
+        mDisabledLooper.stop();
+        mEnabledLooper.start();
+        
     	// schedule the autonomous command 
     	
         visionProcessor.setNTInfo("ledMode", Constants.VISION_LED_OFF);
@@ -307,7 +326,9 @@ public class Robot extends IterativeRobot {
      * Runs when teleop mode initializes
      */
     public void teleopInit() {
-	    //This makes sure that the autonomous stops running when teleop starts running. 
+    	 mDisabledLooper.stop();
+    	 
+    	//This makes sure that the autonomous stops running when teleop starts running. 
     	//If you want the autonomous to continue until interrupted by another command, 
     	//remove this line or comment it out.
         if (autonomousCommand != null) autonomousCommand.cancel();
@@ -316,6 +337,8 @@ public class Robot extends IterativeRobot {
         drivetrain.setBrakeMode(false);
         drivetrain.shiftGearReverse();
     	drivetrain.setgear(false);
+
+        mEnabledLooper.start();
         
     	Robot.pneumaticsClimber.reverse(); /*high gear*/
     	Robot.pneumaticsCube.IntakeOn(); /*intake closed*/
@@ -327,6 +350,8 @@ public class Robot extends IterativeRobot {
      */
     public void disabledInit() {
     	//testing
+        mEnabledLooper.stop();
+        mDisabledLooper.start();
     }
 
     /**
