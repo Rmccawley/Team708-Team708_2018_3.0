@@ -20,7 +20,7 @@ public class SubsystemManager implements ILooper {
         mAllSubsystems = allSubsystems;
     }
 
-    public void outputToSmartDashboard() {
+    public void sendToSmartDashboard() {
         mAllSubsystems.forEach((s) -> s.outputTelemetry());
     }
 

@@ -3,7 +3,12 @@ package org.usfirst.frc.team708.robot.subsystems;
 import com.ctre.phoenix.ParamEnum;
 import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.VictorSPX;
+import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
+
 import org.usfirst.frc.team708.robot.Constants;
+import org.usfirst.frc.team708.robot.RobotMap;
+
 import drivers.TalonSRXChecker;
 import drivers.TalonSRXFactory;
 import drivers.TalonSRXUtil;
@@ -25,7 +30,8 @@ public class Elevator extends Subsystem {
     private static final double kEncoderTicksPerInch = -1271.0;
     private static Elevator mInstance = null;
 //    private Intake mIntake = Intake.getInstance();
-    private final TalonSRX mMaster, mRightSlave, mLeftSlaveA, mLeftSlaveB;
+    private final TalonSRX mMaster;
+    
 //    private final Solenoid mShifter;
     private PeriodicIO mPeriodicIO = new PeriodicIO();
     private ElevatorControlState mElevatorControlState = ElevatorControlState.OPEN_LOOP;
@@ -33,7 +39,7 @@ public class Elevator extends Subsystem {
     private boolean mHasBeenZeroed = false;
 
     private Elevator() {
-        mMaster = TalonSRXFactory.createDefaultTalon(Constants.kElevatorMasterId);
+        mMaster = TalonSRXFactory.createDefaultTalon(RobotMap.elevatorMotorMaster);
 
         TalonSRXUtil.checkError(
                 mMaster.configSelectedFeedbackSensor(
@@ -190,17 +196,6 @@ public class Elevator extends Subsystem {
         mMaster.setInverted(true);
         mMaster.setSensorPhase(true);
 
-        mRightSlave = TalonSRXFactory.createPermanentSlaveTalon(Constants.kElevatorRightSlaveId,
-                Constants.kElevatorMasterId);
-        mRightSlave.setInverted(true);
-
-        mLeftSlaveA = TalonSRXFactory.createPermanentSlaveTalon(Constants.kElevatorLeftSlaveAId,
-                Constants.kElevatorMasterId);
-        mLeftSlaveA.setInverted(false);
-
-        mLeftSlaveB = TalonSRXFactory.createPermanentSlaveTalon(Constants.kElevatorLeftSlaveBId,
-                Constants.kElevatorMasterId);
-        mLeftSlaveB.setInverted(false);
 
 //        mShifter = Constants.makeSolenoidForId(Constants.kElevatorShifterSolenoidId);
 //        mShifter.set(true);
@@ -312,10 +307,7 @@ public class Elevator extends Subsystem {
     }
 
     private void setNeutralMode(NeutralMode neutralMode) {
-        mLeftSlaveA.setNeutralMode(neutralMode);
-        mLeftSlaveB.setNeutralMode(neutralMode);
         mMaster.setNeutralMode(neutralMode);
-        mRightSlave.setNeutralMode(neutralMode);
     }
 
     @Override
@@ -377,32 +369,11 @@ public class Elevator extends Subsystem {
         setNeutralMode(NeutralMode.Coast);
 //        setHangMode(true);
 
-        boolean leftSide =
-                TalonSRXChecker.CheckTalons(this,
-                        new ArrayList<TalonSRXChecker.TalonSRXConfig>() {
-                            {
-                                add(new TalonSRXChecker.TalonSRXConfig("left_slave_a",
-                                        mLeftSlaveA));
-                                add(new TalonSRXChecker.TalonSRXConfig("left_slave_b",
-                                        mLeftSlaveB));
-                            }
-                        }, new TalonSRXChecker.CheckerConfig() {
-                            {
-                                mCurrentFloor = 2;
-                                mRPMFloor = 200;
-                                mCurrentEpsilon = 2.0;
-                                mRPMEpsilon = 250;
-                                mRunTimeSec = 2.0;
-                                mRunOutputPercentage = -0.4;
-                                mRPMSupplier = () -> -mMaster.getSelectedSensorVelocity(0);
-                            }
-                        });
         boolean rightSide =
                 TalonSRXChecker.CheckTalons(this,
                         new ArrayList<TalonSRXChecker.TalonSRXConfig>() {
                             {
                                 add(new TalonSRXChecker.TalonSRXConfig("master", mMaster));
-                                add(new TalonSRXChecker.TalonSRXConfig("right_slave", mRightSlave));
                             }
                         }, new TalonSRXChecker.CheckerConfig() {
                             {
@@ -416,7 +387,7 @@ public class Elevator extends Subsystem {
                             }
                         });
 
-        return leftSide && rightSide;
+        return rightSide;
     }
 
     private enum ElevatorControlState {

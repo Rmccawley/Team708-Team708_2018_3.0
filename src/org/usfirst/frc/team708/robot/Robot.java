@@ -25,6 +25,7 @@ import org.usfirst.frc.team708.robot.subsystems.Drivetrain;
 import org.usfirst.frc.team708.robot.subsystems.Arm;
 import org.usfirst.frc.team708.robot.subsystems.Telescope;
 import org.usfirst.frc.team708.robot.subsystems.Wrist;
+import org.usfirst.frc.team708.robot.util.CrashTracker;
 import org.usfirst.frc.team708.robot.subsystems.Elevator;
 import org.usfirst.frc.team708.robot.subsystems.IntakeCube;
 import org.usfirst.frc.team708.robot.subsystems.VisionProcessor;
@@ -37,6 +38,8 @@ import org.usfirst.frc.team708.robot.SubsystemManager;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import loops.Looper;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Arrays;
 
 /**
@@ -49,17 +52,19 @@ import java.util.Arrays;
  * @cleanup of vision & gamedata - 1/28 @11:24
  */
 public class Robot extends IterativeRobot {
-    private Looper mEnabledLooper = new Looper();
-    private Looper mDisabledLooper = new Looper();
+    private Looper mEnabledLooper = new Looper(); //create new object //254
+    private Looper mDisabledLooper = new Looper(); //create new object //254
     
-    private final SubsystemManager mSubsystemManager = new SubsystemManager(
+    private final SubsystemManager mSubsystemManager = new SubsystemManager( //254
             Arrays.asList(
                     Wrist.getInstance(),
                     Elevator.getInstance()
             )
     );
-
-	Timer statsTimer;										// Timer used for Smart Dash statistics
+    private Wrist mWrist = Wrist.getInstance();
+    private Elevator mElevator = Elevator.getInstance();
+	
+    Timer statsTimer;										// Timer used for Smart Dash statistics
     
     public static Drivetrain 		drivetrain;
 	public static VisionProcessor 	visionProcessor;
@@ -70,6 +75,7 @@ public class Robot extends IterativeRobot {
 	public static Telescope			tele;
 	public static OI 				oi;
 
+	
    	public String 	gameData;
    	public String 	robotLocation;
    	public String 	autoMode;
@@ -85,8 +91,10 @@ public class Robot extends IterativeRobot {
      * used for any initialization code.
      */
     public void robotInit() {
-        mSubsystemManager.registerEnabledLoops(mEnabledLooper);
-        mSubsystemManager.registerDisabledLoops(mDisabledLooper);
+        CrashTracker.logRobotInit();
+        
+        mSubsystemManager.registerEnabledLoops(mEnabledLooper); //254
+        mSubsystemManager.registerDisabledLoops(mDisabledLooper); //254
         
         statsTimer = new Timer();	// Initializes the timer for sending Smart Dashboard data
         statsTimer.start();		// Starts the timer for the Smart Dashboard
@@ -100,6 +108,7 @@ public class Robot extends IterativeRobot {
 	    visionProcessor		= new VisionProcessor();
 	    arm 				= new Arm();
 	    tele	 			= new Telescope();
+
 
 
 	    visionProcessor.setNTInfo("ledMode", Constants.VISION_LED_OFF);
@@ -119,6 +128,8 @@ public class Robot extends IterativeRobot {
      * Runs periodically while the robot is enabled
      */
 	public void disabledPeriodic() {
+        SmartDashboard.putString("Match Cycle", "DISABLED");
+
 		Scheduler.getInstance().run();
 		sendStatistics();
 		prefs = Preferences.getInstance();
@@ -128,6 +139,9 @@ public class Robot extends IterativeRobot {
 	 * Runs at the start of autonomous mode
 	 */
     public void autonomousInit() {
+        SmartDashboard.putString("Match Cycle", "AUTONOMOUS");
+
+    	CrashTracker.logAutoInit();
         mDisabledLooper.stop();
         mEnabledLooper.start();
         
@@ -318,6 +332,7 @@ public class Robot extends IterativeRobot {
      * This function is called periodically during autonomous
      */
     public void autonomousPeriodic() {
+    	SmartDashboard.putString("Match Cycle", "AUTONOMOUS");
         Scheduler.getInstance().run();
         sendStatistics();
     }
@@ -326,7 +341,9 @@ public class Robot extends IterativeRobot {
      * Runs when teleop mode initializes
      */
     public void teleopInit() {
-    	 mDisabledLooper.stop();
+        SmartDashboard.putString("Match Cycle", "TELEOP");
+    	CrashTracker.logTeleopInit();
+    	mDisabledLooper.stop();
     	 
     	//This makes sure that the autonomous stops running when teleop starts running. 
     	//If you want the autonomous to continue until interrupted by another command, 
@@ -349,15 +366,18 @@ public class Robot extends IterativeRobot {
      * You can use it to reset subsystems before shutting down.
      */
     public void disabledInit() {
+        SmartDashboard.putString("Match Cycle", "TEST");
     	//testing
-        mEnabledLooper.stop();
-        mDisabledLooper.start();
+    	CrashTracker.logDisabledInit();
+        mEnabledLooper.stop(); //254
+        mDisabledLooper.start(); //254
     }
 
     /**
      * This function is called periodically during operator control
      */
     public void teleopPeriodic() {
+    	SmartDashboard.putString("Match Cycle", "TELEOP");
         Scheduler.getInstance().run();
         sendStatistics();
     }
@@ -366,6 +386,8 @@ public class Robot extends IterativeRobot {
      * This function is called periodically during test mode
      */
     public void testPeriodic() {
+        SmartDashboard.putString("Match Cycle", "TEST");
+
         sendStatistics();
     }
     
@@ -384,6 +406,8 @@ public class Robot extends IterativeRobot {
         pneumaticsClimber.sendToDashboard();
         arm.sendToDashboard();
         tele.sendToDashboard();
+        mEnabledLooper.sendToSmartDashboard();
+        mSubsystemManager.sendToSmartDashboard();
     }
     
     /**

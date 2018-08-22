@@ -6,6 +6,8 @@ import com.ctre.phoenix.ParamEnum;
 import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import org.usfirst.frc.team708.robot.Constants;
+import org.usfirst.frc.team708.robot.RobotMap;
+
 import loops.ILooper;
 import loops.Loop;
 import drivers.TalonSRXChecker;
@@ -29,7 +31,7 @@ public class Wrist extends Subsystem {
 
     private static Wrist mInstance;
 //    private final Intake mIntake = Intake.getInstance();
-    private final CarriageCanifier mCanifier = CarriageCanifier.getInstance();
+//    private final CarriageCanifier mCanifier = CarriageCanifier.getInstance();
     private final Elevator mElevator = Elevator.getInstance();
     private final TalonSRX mMaster;
     private PeriodicIO mPeriodicIO = new PeriodicIO();
@@ -39,10 +41,11 @@ public class Wrist extends Subsystem {
     private ReflectingCSVWriter<PeriodicIO> mCSVWriter = null;
 
     private Wrist() {
-        mMaster = TalonSRXFactory.createDefaultTalon(Constants.KWristMasterId);
+        mMaster = TalonSRXFactory.createDefaultTalon(RobotMap.wristMotorMaster);
         ErrorCode errorCode;
 
         //configure talon
+/*      
         errorCode = mMaster.configRemoteFeedbackFilter(Constants.kCanifierId, RemoteSensorSource.CANifier_Quadrature,
                 0, Constants.kLongCANTimeoutMs);
         if (errorCode != ErrorCode.OK)
@@ -79,7 +82,7 @@ public class Wrist extends Subsystem {
         errorCode = mMaster.configVoltageCompSaturation(12.0, Constants.kLongCANTimeoutMs);
         if (errorCode != ErrorCode.OK)
             DriverStation.reportError("Could not set wrist voltage compensation: " + errorCode, false);
-
+*/
         //configure magic motion
         errorCode = mMaster.config_kP(kMagicMotionSlot, Constants.kWristKp, Constants.kLongCANTimeoutMs);
         if (errorCode != ErrorCode.OK)
@@ -147,7 +150,7 @@ public class Wrist extends Subsystem {
         if (errorCode != ErrorCode.OK)
             DriverStation.reportError("Could not set wrist deadband: " + errorCode, false);
 
-
+/*
         TalonSRXUtil.checkError(
                 mMaster.configContinuousCurrentLimit(20, Constants.kLongCANTimeoutMs),
                 "Could not set wrist continuous current limit.");
@@ -164,16 +167,16 @@ public class Wrist extends Subsystem {
                 mMaster.configClosedloopRamp(
                         Constants.kWristRampRate, Constants.kLongCANTimeoutMs),
                 "Could not set wrist voltage ramp rate: ");
+*/
+//        mMaster.enableCurrentLimit(true);
 
-        mMaster.enableCurrentLimit(true);
-
-        mMaster.selectProfileSlot(0, 0);
+//        mMaster.selectProfileSlot(0, 0);
 
         mMaster.setInverted(false);
         mMaster.setSensorPhase(false);
         mMaster.setNeutralMode(NeutralMode.Brake);
-        mMaster.overrideLimitSwitchesEnable(true);
-        mMaster.overrideSoftLimitsEnable(true);
+//        mMaster.overrideLimitSwitchesEnable(true);
+//        mMaster.overrideSoftLimitsEnable(true);
 
         mMaster.enableVoltageCompensation(true);
         mMaster.set(ControlMode.PercentOutput, 0);
@@ -182,8 +185,8 @@ public class Wrist extends Subsystem {
         mMaster.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 10, 20);
 
         // DO NOT reset encoder positions on limit switch
-        mMaster.configSetParameter(ParamEnum.eClearPositionOnLimitF, 0, 0, 0, 0);
-        mMaster.configSetParameter(ParamEnum.eClearPositionOnLimitR, 0, 0, 0, 0);
+//        mMaster.configSetParameter(ParamEnum.eClearPositionOnLimitF, 0, 0, 0, 0);
+//        mMaster.configSetParameter(ParamEnum.eClearPositionOnLimitR, 0, 0, 0, 0);
     }
 
     public synchronized static Wrist getInstance() {
@@ -203,7 +206,7 @@ public class Wrist extends Subsystem {
 
         SmartDashboard.putNumber("Wrist RPM", getRPM());
         SmartDashboard.putNumber("Wrist Power %", mPeriodicIO.output_percent);
-        SmartDashboard.putBoolean("Wrist Limit Switch", mPeriodicIO.limit_switch);
+//        SmartDashboard.putBoolean("Wrist Limit Switch", mPeriodicIO.limit_switch);
         SmartDashboard.putNumber("Wrist Last Expected Trajectory", getSetpoint());
         SmartDashboard.putNumber("Wrist Current Trajectory Point", mPeriodicIO.active_trajectory_position);
         SmartDashboard.putNumber("Wrist Traj Vel", mPeriodicIO.active_trajectory_velocity);
@@ -226,7 +229,7 @@ public class Wrist extends Subsystem {
         setOpenLoop(0.0);
     }
 
-    @Override
+/*	@Override
     public synchronized void zeroSensors() {
         mMaster.setSelectedSensorPosition(0, 0, 0);
         mCanifier.resetWristEncoder();
@@ -236,7 +239,7 @@ public class Wrist extends Subsystem {
     public synchronized boolean hasBeenZeroed() {
         return mHasBeenZeroed;
     }
-
+*/
     @Override
     public void registerEnabledLoops(ILooper enabledLooper) {
         enabledLooper.register(new Loop() {
@@ -246,7 +249,7 @@ public class Wrist extends Subsystem {
             @Override
             public void onStart(double timestamp) {
                 mHomingStartTime = timestamp;
-                // startLogging();
+                startLogging();
             }
 
             @Override
@@ -291,14 +294,14 @@ public class Wrist extends Subsystem {
         mDesiredState = SystemState.OPEN_LOOP;
     }
 
-    public synchronized boolean resetIfAtLimit() {
+/*    public synchronized boolean resetIfAtLimit() {
         if (mCanifier.getLimR()) {
             zeroSensors();
             return true;
         }
         return false;
     }
-
+*/
     /**
      * @param position the target position of the wrist in sensor units
      */
@@ -415,7 +418,7 @@ public class Wrist extends Subsystem {
             mPeriodicIO.active_trajectory_velocity = 0;
             mPeriodicIO.active_trajectory_acceleration_rad_per_s2 = 0.0;
         }
-        mPeriodicIO.limit_switch = mCanifier.getLimR();
+//        mPeriodicIO.limit_switch = mCanifier.getLimR();
         mPeriodicIO.output_voltage = mMaster.getMotorOutputVoltage();
         mPeriodicIO.output_percent = mMaster.getMotorOutputPercent();
         mPeriodicIO.position_ticks = mMaster.getSelectedSensorPosition(0);
@@ -454,6 +457,7 @@ public class Wrist extends Subsystem {
             mMaster.set(ControlMode.PercentOutput,
                     mPeriodicIO.demand, DemandType.ArbitraryFeedForward, mPeriodicIO.feedforward);
         }
+        stopLogging();
     }
 
     @Override
@@ -478,7 +482,7 @@ public class Wrist extends Subsystem {
 
     public synchronized void startLogging() {
         if (mCSVWriter == null) {
-            mCSVWriter = new ReflectingCSVWriter<>("/home/lvuser/WRIST-LOGS.csv", PeriodicIO.class);
+            mCSVWriter = new ReflectingCSVWriter<>("/U/TestFolder/WRIST-LOGS.txt", PeriodicIO.class);
         }
     }
 

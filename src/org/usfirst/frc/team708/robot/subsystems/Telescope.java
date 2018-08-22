@@ -22,9 +22,9 @@ public class Telescope extends Subsystem {
 	public double teleDistancePerPulse;
     
 	public Telescope() {
-		teleMotorMaster  = new WPI_TalonSRX(RobotMap.telescopingMotorMaster);
-		teleMotorSlave1  = new WPI_VictorSPX(RobotMap.telescopingMotorSlave1);
-		teleMotorSlave2  = new WPI_VictorSPX(RobotMap.telescopingMotorSlave2);
+		teleMotorMaster  = new WPI_TalonSRX(RobotMap.elevatorMotorMaster);
+		teleMotorSlave1  = new WPI_VictorSPX(RobotMap.elevatorMotorSlave2);
+		teleMotorSlave2  = new WPI_VictorSPX(RobotMap.elevatorMotorSlave2);
 		
 		/* Peak Current and Duration must be exceeded before current limit is activated.
 		 * When activated, current will be limited to Continuous Current.

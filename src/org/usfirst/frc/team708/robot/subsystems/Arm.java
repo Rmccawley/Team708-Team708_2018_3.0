@@ -28,8 +28,8 @@ public class Arm extends Subsystem {
       * Constructor
       */
 	public Arm() {
-		armMotorMaster = new WPI_TalonSRX(RobotMap.pivotArmMotorMaster);
-		armMotorSlave1  = new WPI_VictorSPX(RobotMap.pivotArmMotorSlave1);
+		armMotorMaster = new WPI_TalonSRX(RobotMap.wristMotorMaster);
+		armMotorSlave1  = new WPI_VictorSPX(RobotMap.wristMotorSlave1);
 		armSensor 	= new DigitalInput(RobotMap.armSensor);
 		
 		/* Peak Current and Duration must be exceeded before current limit is activated.

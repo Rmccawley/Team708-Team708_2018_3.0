@@ -154,18 +154,9 @@ public final class Constants {
     public static final int kIntakeLeftMasterId = 9;
     public static final int kIntakeRightMasterId = 10;
     public static final int kCanifierId = 0;
-
-    // Elevator
-    public static final int kElevatorMasterId = 11;
-    public static final int kElevatorRightSlaveId = 8;
-    public static final int kElevatorLeftSlaveAId = 1;
-    public static final int kElevatorLeftSlaveBId = 2;
     
     public static final int kElevatorShifterSolenoidId = 8;
-
-    // Wrist
-    public static final int KWristMasterId = 15;
-    
+  
 	/*
 	 * Vision Processor
 	 */

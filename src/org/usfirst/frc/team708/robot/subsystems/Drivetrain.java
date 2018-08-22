@@ -96,13 +96,16 @@ public class Drivetrain extends PIDSubsystem {
 		SpeedControllerGroup leftMotors = new SpeedControllerGroup(leftMaster, leftSlave1, leftSlave2);
 		SpeedControllerGroup rightMotors = new SpeedControllerGroup(rightMaster, rightSlave1, rightSlave2);
 		
+		leftMotors.setInverted(true);
+		rightMotors.setInverted(true);
+		
 		drivetrain = new DifferentialDrive(leftMotors, rightMotors);	// Initializes drivetrain class
 		
 		accelerometer 	= new BuiltInAccelerometer();	// Initializes the accelerometer from the roboRIO
 		gyro 			= new ADXRS450_Gyro();			// Initializes the gyro
 		gyro.reset();									// Resets the gyro so that it starts with a 0.0 value
-		encoder = new Encoder(RobotMap.drivetrainEncoderARt, RobotMap.drivetrainEncoderBRt, Constants.DRIVETRAIN_USE_LEFT_ENCODER);
-		encoder2 = new Encoder(RobotMap.drivetrainEncoderALeft, RobotMap.drivetrainEncoderBLeft, !Constants.DRIVETRAIN_USE_LEFT_ENCODER);
+		encoder = new Encoder(RobotMap.drivetrainEncoderARt, RobotMap.drivetrainEncoderBRt, !Constants.DRIVETRAIN_USE_LEFT_ENCODER);
+		encoder2 = new Encoder(RobotMap.drivetrainEncoderALeft, RobotMap.drivetrainEncoderBLeft, Constants.DRIVETRAIN_USE_LEFT_ENCODER);
 														// Initializes the encoder
 		distancePerPulse = (Constants.DRIVETRAIN_WHEEL_DIAMETER * Math.PI) /
 						(Constants.DRIVETRAIN_ENCODER_PULSES_PER_REV);

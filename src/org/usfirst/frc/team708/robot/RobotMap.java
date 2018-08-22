@@ -23,6 +23,7 @@ public class RobotMap {
 //	public static final int intakeMotor 	= 0;
 //	public static final int 			 	= 1;
 //	public static final int  			 	= 2;
+	
 //	public static final int  				= 3;
 //	public static final int  				= 4;
 //	public static final int  				= 5;
@@ -39,15 +40,17 @@ public class RobotMap {
 	public static final int drivetrainRightMotorMaster  = 14;
 	public static final int drivetrainRightMotorSlave1 	= 15;
 	public static final int drivetrainRightMotorSlave2 	= 16;
-
-	public static final int telescopingMotorMaster	 	= 21;
-	public static final int telescopingMotorSlave1	 	= 22;
-	public static final int telescopingMotorSlave2	 	= 23;
-
-	// Pivot Arm CAN Device ID
-	public static final int pivotArmMotorMaster			= 31; 
-	public static final int pivotArmMotorSlave1			= 32; 
 	
+	//Elevator
+	public static final int elevatorMotorMaster	 		= 21;
+	public static final int elevatorMotorSlave1	 		= 22;
+	public static final int elevatorMotorSlave2	 		= 23;
+
+	//Wrist
+	public static final int wristMotorMaster 			= 31;
+	public static final int wristMotorSlave1			= 32;
+	
+	//Intake
 	public static final int intakeMotorMaster			= 41; 
 	public static final int intakeMotorSlave			= 42; 
 	
